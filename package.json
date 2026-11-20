@@ -1,0 +1,13 @@
+{
+  "name": "overdrive-starter",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "packageManager": "pnpm@12.21.0",
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "build": "pnpm --filter web build",
+    "check": "pnpm --filter web typecheck",
+    "dev:collab": "pnpm --filter collaboration dev"
+  }
+}
