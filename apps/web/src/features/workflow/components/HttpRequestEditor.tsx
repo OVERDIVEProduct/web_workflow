@@ -259,8 +259,8 @@ export default function HttpRequestEditor({
   );
   const context =
     parsed.value &&
-    typeof parsed.value === "object" &&
-    !Array.isArray(parsed.value)
+      typeof parsed.value === "object" &&
+      !Array.isArray(parsed.value)
       ? (parsed.value as Record<string, unknown>)
       : {};
   const filteredRows = useMemo(
@@ -371,13 +371,13 @@ export default function HttpRequestEditor({
         throw Error("回應超過 5 MB 展示限制");
       const resultType = responseText
         ? (() => {
-            try {
-              JSON.parse(responseText);
-              return "json" as const;
-            } catch {
-              return "text" as const;
-            }
-          })()
+          try {
+            JSON.parse(responseText);
+            return "json" as const;
+          } catch {
+            return "text" as const;
+          }
+        })()
         : ("empty" as const);
       const data: unknown =
         resultType === "json"
@@ -421,7 +421,7 @@ export default function HttpRequestEditor({
         setStatus("failed");
         setError(
           (e instanceof Error ? e.message : "請求失敗") +
-            "。若是 Failed to fetch，可能是 API CORS 政策或網路問題。",
+          "。若是 Failed to fetch，可能是 API CORS 政策或網路問題。",
         );
       }
     } finally {
