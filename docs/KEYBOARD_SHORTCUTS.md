@@ -35,4 +35,4 @@ Mac 亦支援 Cmd 對應 Ctrl 的組合。
 .flow-toolbar button:disabled { opacity: .4; cursor: not-allowed; }
 ```
 
-建議先備份原檔，然後從專案根目錄執行 `pnpm install`、`pnpm dev`，確認快捷鍵可用再提交 Git。
+建議先備份原檔，然後從專案根目錄執行 `npm install`、`npm run dev`，確認快捷鍵可用再提交 Git。

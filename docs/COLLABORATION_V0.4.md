@@ -12,22 +12,22 @@
 
 ## 安裝和啟動
 
-在包含 `pnpm-workspace.yaml` 的專案根目錄：
+在專案根目錄（workspace 已設定於根目錄 `package.json`）：
 
 ```powershell
-pnpm install
+npm install
 ```
 
 開啟 **第一個** PowerShell 終端機啟動協作伺服器：
 
 ```powershell
-pnpm dev:collab
+npm run dev:collab
 ```
 
 開啟 **第二個** 終端機啟動網站：
 
 ```powershell
-pnpm dev
+npm run dev
 ```
 
 同一台電腦兩個不同瀏覽器（例如 Chrome 和 Edge）打開 `http://localhost:5173/workflows/demo`。兩個視窗應該顯示 `已連線 · 2 人在線`。測試 A 新增便條紙、拖曳並編輯文字；B 應同步顯示。B 刪除連線，A 應同步。
@@ -61,7 +61,7 @@ docs/COLLABORATION_V0.4.md
 5. 此原型使用一個 Yjs 欄位儲存 edge；多人同時編輯同一條 edge 的不同屬性可能有衝突。
 6. Yjs UndoManager 只追蹤本分頁本地操作，但是多使用者修改同一欄位的複雜 undo 情境仍需要驗收。
 7. 尚未實作真正協作游標、使用者身份、權限、PostgreSQL 儲存、操作審計及協作房間 TTL。
-8. 本環境無法從 npm 下載依賴，**尚未完成實際 pnpm install、TypeScript 編譯、兩瀏覽器測試**。
+8. 若環境無法從 npm 下載依賴，請先確認網路與 npm registry 設定，再執行 `npm install`、TypeScript 編譯與兩瀏覽器測試。
 
 ## 下一階段建議
 

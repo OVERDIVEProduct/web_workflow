@@ -6,15 +6,15 @@
 
 - Windows / macOS / Linux
 - Node.js：請用團隊統一且與 Vite 8、TypeScript 6 相容的版本；建議 Node.js 24 LTS
-- pnpm：本專案 packageManager 宣告 `pnpm@12.21.0`，請統一版本
+- npm：本專案 packageManager 宣告 `npm@11.19.1`，請統一版本
 
 ## 安裝啟動
 
 在新專案的根目錄執行：
 
 ```powershell
-pnpm install
-pnpm dev
+npm install
+npm run dev
 ```
 
 然後開啟 http://localhost:5173 ，首頁將跳轉 `/dashboard`。
@@ -22,8 +22,8 @@ pnpm dev
 ### 檢查
 
 ```powershell
-pnpm check
-pnpm build
+npm run check
+npm run build
 ```
 
 ## 各頁面網址
@@ -70,8 +70,8 @@ localStorage 只用於個人開發測試，不是安全且可靠的多人資料�
 
 **不要覆蓋舊專案**。可先解壓至 `C:\Users\user\Desktop\OVERDRIVE-v2`，在新資料夾驗證成功後，再以新的 feature 分支導入 GitHub 或由全隊決議新的 repo。
 
-不要提交 `.env`、Token 或 `node_modules`。初期只需 `pnpm install` 還原依賴。
+不要提交 `.env`、Token 或 `node_modules`。初期只需 `npm install` 還原依賴。
 
 ## V0.4 多人即時協作（實驗版）
 
-詳見 `docs/COLLABORATION_V0.4.md`。先 `pnpm install`，再分別執行 `pnpm dev:collab` 與 `pnpm dev`。
+詳見 `docs/COLLABORATION_V0.4.md`。先 `npm install`，再分別執行 `npm run dev:collab` 與 `npm run dev`。

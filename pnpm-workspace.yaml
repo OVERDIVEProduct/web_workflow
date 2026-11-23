@@ -1,5 +1,0 @@
-packages:
-  - "apps/*"
-  - "packages/*"
-allowBuilds:
-  leveldown: set this to true or false
