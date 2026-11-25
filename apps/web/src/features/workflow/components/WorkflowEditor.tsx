@@ -10,7 +10,6 @@ import {
   Background,
   Controls,
   MiniMap,
-  Panel,
   addEdge,
   useNodesState,
   useEdgesState,
@@ -19,6 +18,10 @@ import {
   type EdgeChangeset,
   type NodeTypes,
 } from "@xyflow/react";
+import { createPortal } from "react-dom";
+import { useOutletContext } from "react-router";
+import { EditorHeaderActions, EditorToolbar, EditorToolPanel } from "./EditorChrome";
+import "./editorChrome.css";
 import WorkflowNodeCard from "../nodes/WorkflowNodeCard";
 import HttpRequestEditor from "./HttpRequestEditor";
 import "./httpRequestEditor.css";
@@ -70,14 +73,6 @@ const initialEdges: WorkflowEdge[] = [
   { id: "e1", source: "trigger-1", target: "http-1" },
   { id: "e2", source: "http-1", target: "output-1" },
 ];
-const choices: { type: WorkflowNodeKind; label: string }[] = [
-  { type: "manualTrigger", label: "Trigger" },
-  { type: "httpRequest", label: "HTTP" },
-  { type: "set", label: "Set" },
-  { type: "if", label: "IF" },
-  { type: "output", label: "Output" },
-  { type: "stickyNote", label: "便條紙" },
-];
 const clone = <T,>(value: T): T => structuredClone(value);
 
 function loadDocument(id: string): WorkflowDocument | undefined {
@@ -108,6 +103,9 @@ function isTypingTarget(target: EventTarget | null): boolean {
 }
 
 export default function WorkflowEditor({ workflowId }: { workflowId: string }) {
+  const { workflowHeader } = useOutletContext<{ workflowHeader: HTMLDivElement | null }>();
+  const [toolMode, setToolMode] = useState<"select" | "pan">("select");
+  const [panelOpen, setPanelOpen] = useState(true);
   const saved = useMemo(() => loadDocument(workflowId), [workflowId]);
   const [nodes, setNodes] = useNodesState<WorkflowNode>(
     saved?.nodes ?? initialNodes,
@@ -444,6 +442,7 @@ export default function WorkflowEditor({ workflowId }: { workflowId: string }) {
 
   return (
     <StickyNoteActionsProvider actions={stickyActions}>
+      <div className="workflow-editor-layout">
       <div
         className="editor-wrap"
         ref={editorRef}
@@ -472,69 +471,16 @@ export default function WorkflowEditor({ workflowId }: { workflowId: string }) {
           nodesDraggable={ready}
           nodesConnectable={ready}
           elementsSelectable={ready}
+          panOnDrag={toolMode === "pan" ? true : [1, 2]}
+          selectionOnDrag={toolMode === "select"}
           fitView
         >
           <Background gap={18} size={1} color="#d8dfec" />
-          <Controls />
-          <MiniMap zoomable pannable />
-          <Panel position="top-left" className="flow-toolbar">
-            <strong>新增節點</strong>
-            {choices.map(({ type, label }) => (
-              <button
-                key={type}
-                type="button"
-                disabled={!ready}
-                onClick={() => addNode(type)}
-              >
-                {label}
-              </button>
-            ))}
-          </Panel>
-          <Panel position="top-right" className="flow-toolbar">
-            <span style={{ fontSize: 12, marginRight: 8 }}>
-              {!ready
-                ? "● 等待首次同步"
-                : collab.connected
-                  ? `● 已連線 · ${collab.onlineCount} 人在線`
-                  : "● 已斷線（更新待重新連線）"}
-            </span>
-            <button
-              type="button"
-              disabled={!ready || !collab.canUndo}
-              onClick={undo}
-              title="Ctrl + Z"
-            >
-              復原
-            </button>
-            <button
-              type="button"
-              disabled={!ready || !collab.canRedo}
-              onClick={redo}
-              title="Ctrl + Y"
-            >
-              重做
-            </button>
-            <button
-              type="button"
-              disabled={!ready}
-              className="primary-button"
-              onClick={save}
-              title="Ctrl + S"
-            >
-              備份至本機
-            </button>
-          </Panel>
-          <Panel position="bottom-center" className="flow-toolbar">
-            <span style={{ fontSize: 11, color: "#63738a" }}>
-              {editorFocused
-                ? "編輯器快捷鍵已啟用 · "
-                : "點擊畫布以啟用快捷鍵 · "}
-              Delete 刪除 · Ctrl+A 全選 · Ctrl+C/V 複製貼上 · Ctrl+Z 復原 ·
-              Ctrl+Y 重做 · Ctrl+S 備份 · Esc 取消選取
-              {lastSaved ? ` · 本機備份 ${lastSaved}` : ""}
-            </span>
-          </Panel>
+          <Controls className="editor-canvas-controls" />
+          <MiniMap zoomable pannable className="editor-canvas-minimap" />
         </ReactFlow>
+        <EditorToolbar mode={toolMode} onMode={setToolMode} ready={ready} onAdd={addNode} panelOpen={panelOpen} onTogglePanel={() => setPanelOpen(open => !open)} />
+        <span className="editor-keyboard-hint" role="status">{editorFocused ? "快捷鍵已啟用" : "點擊畫布以啟用快捷鍵"} · Delete 刪除 · Ctrl+C/V 複製貼上</span>
         {editingHttpNodeId && (
           <HttpRequestEditor
             key={editingHttpNodeId}
@@ -544,6 +490,9 @@ export default function WorkflowEditor({ workflowId }: { workflowId: string }) {
           />
         )}
       </div>
+      {panelOpen && <EditorToolPanel ready={ready} onAdd={addNode} />}
+      </div>
+      {workflowHeader && createPortal(<EditorHeaderActions connected={collab.connected} ready={ready} onlineCount={collab.onlineCount} canUndo={collab.canUndo} canRedo={collab.canRedo} onUndo={undo} onRedo={redo} onSave={save} lastSaved={lastSaved} />, workflowHeader)}
     </StickyNoteActionsProvider>
   );
 }
