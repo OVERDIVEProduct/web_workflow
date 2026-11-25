@@ -3,7 +3,6 @@ import {
   AlertTriangle,
   Braces,
   CheckCircle2,
-  ChevronDown,
   Code2,
   Copy,
   Globe2,
@@ -11,7 +10,6 @@ import {
   Plus,
   RotateCcw,
   Search,
-  ShieldCheck,
   Trash2,
   X,
 } from "lucide-react";
@@ -218,9 +216,9 @@ export default function HttpRequestEditor({
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
-  const [districtOnly, setDistrictOnly] = useState(false);
-  const [bikesOnly, setBikesOnly] = useState(false);
-  const [keywordOnly, setKeywordOnly] = useState(false);
+  const [districtOnly] = useState(false);
+  const [bikesOnly] = useState(false);
+  const [keywordOnly] = useState(false);
   const [preview, setPreview] = useState(false);
   const [expression, setExpression] = useState("{{ $json.district }}");
   const [closeDialog, setCloseDialog] = useState(false);
