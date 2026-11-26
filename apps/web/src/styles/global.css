@@ -42,27 +42,28 @@ button {
 }
 
 .sidebar {
-  width: 236px;
+  width: 200px;
   flex-shrink: 0;
-  background: #131d35;
-  color: #dae5f8;
+  background: #fff;
+  color: #444445;
   display: flex;
   flex-direction: column;
+  gap: 12px;
   padding: 25px 14px 18px;
+  overflow-y: auto;
 }
-
 .brand {
-  color: #fff;
+  color: #444445;
+  font-family: Inter, 'Segoe UI', Arial, sans-serif;
   font-size: 17px;
   font-weight: 800;
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 2px 11px 34px;
+  padding: 2px 0 34px 12px;
   text-decoration: none;
-  letter-spacing: .4px;
+  flex-shrink: 0;
 }
-
 .brand-mark {
   width: 30px;
   height: 30px;
@@ -70,49 +71,28 @@ button {
   display: grid;
   place-items: center;
   background: #4268eb;
+  flex-shrink: 0;
 }
-
-.sidebar-caption {
-  color: #71809d;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 1.4px;
-  margin: 0 11px 12px;
-}
-
-.nav-list {
-  display: grid;
-  gap: 5px;
-}
-
+.brand-mark img, .nav-item img { display: block; flex-shrink: 0; }
+.nav-list { display: grid; gap: 5px; width: 100%; }
 .nav-item {
-  color: #b9c6dc;
+  color: #444445;
   display: flex;
-  gap: 12px;
+  gap: 8px;
   align-items: center;
+  height: 44px;
   padding: 12px;
   text-decoration: none;
-  border-radius: 9px;
-  font-weight: 550;
-  font-size: 14px;
+  border-radius: 8px;
+  font-family: 'Noto Sans TC', Inter, 'Segoe UI', Arial, sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.4;
+  letter-spacing: 1.92px;
+  white-space: nowrap;
 }
-
-.nav-item:hover {
-  background: #213251;
-  color: white;
-}
-
-.nav-item.active {
-  background: #2c4274;
-  color: white;
-}
-
-.sidebar-foot {
-  color: #71809d;
-  font-size: 11px;
-  margin: auto 11px 0;
-}
-
+.nav-item:hover, .nav-item.active { background: #f5f5f5; color: #444445; }
+.brand:focus-visible, .nav-item:focus-visible { outline: 2px solid #325fe6; outline-offset: 2px; }
 .main-area {
   flex: 1;
   min-width: 0;
@@ -122,26 +102,26 @@ button {
 }
 
 .topbar {
-  height: 62px;
+  height: 60px;
   flex-shrink: 0;
   background: #fff;
-  border-bottom: 1px solid #e4e9f1;
   padding: 0 31px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  font-family: 'Noto Sans TC', Inter, 'Segoe UI', Arial, sans-serif;
   font-size: 13px;
-  font-weight: 600;
-  color: #68778d;
+  font-weight: 700;
+  line-height: 1.4;
 }
-
+.topbar-title { font-size: 16px; color: #e8e8e9; }
 .topbar-tag {
-  color: #3466bb;
+  color: #325fe6;
   background: #eff5ff;
   padding: 6px 10px;
   border-radius: 99px;
+  white-space: nowrap;
 }
-
 .page-content {
   flex: 1;
   min-height: 0;
@@ -385,11 +365,7 @@ p {
 }
 
 @media (max-width: 850px) {
-  .sidebar {
-    width: 190px;
-  }
-
-  .page-container {
+.page-container {
     padding: 24px;
   }
 
