@@ -1,12 +1,12 @@
-import { Navigate, Route, Routes } from 'react-router';
-import { ROUTES } from './routes';
-import AppLayout from '../components/layout/AppLayout';
-import DashboardPage from '../pages/DashboardPage';
-import WorkflowsPage from '../pages/WorkflowsPage';
-import WorkflowPage from '../pages/WorkflowPage';
-import SettingsPage from '../pages/SettingsPage';
-import ProfilePage from '../pages/ProfilePage';
-import NotFoundPage from '../pages/NotFoundPage';
+import { Navigate, Route, Routes } from "react-router";
+import { ROUTES } from "./routes";
+import AppLayout from "../components/layout/AppLayout";
+import DashboardPage from "../pages/DashboardPage";
+import WorkflowsPage from "../pages/WorkflowsPage";
+import WorkflowPage from "../pages/WorkflowPage";
+import SettingsPage from "../pages/SettingsPage";
+import ProfilePage from "../pages/ProfilePage";
+import NotFoundPage from "../pages/NotFoundPage";
 
 export default function App() {
   return (

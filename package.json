@@ -3,15 +3,16 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "packageManager": "npm@11.19.1",
+  "scripts": {
+    "dev": "npm run dev --workspace=web",
+    "build": "npm run build --workspace=web",
+    "check": "npm run typecheck --workspace=web",
+    "dev:collab": "npm run dev --workspace=collaboration",
+    "dev:api": "npm run dev --workspace=api",
+    "test:engine": "node --test apps/worker/test/*.test.js"
+  },
   "workspaces": [
     "apps/*",
     "packages/*"
-  ],
-  "scripts": {
-    "dev": "npm run dev --workspace web",
-    "build": "npm run build --workspace web",
-    "check": "npm run typecheck --workspace web",
-    "dev:collab": "npm run dev --workspace collaboration"
-  }
+  ]
 }

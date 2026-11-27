@@ -1,5 +1,5 @@
 :root {
-  font-family: Inter, 'Noto Sans TC', 'Segoe UI', Arial, sans-serif;
+  font-family: Inter, "Noto Sans TC", "Segoe UI", Arial, sans-serif;
   color: #17243a;
   background: #f6f8fc;
   font-synthesis: none;
@@ -54,7 +54,7 @@ button {
 }
 .brand {
   color: #444445;
-  font-family: Inter, 'Segoe UI', Arial, sans-serif;
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
   font-size: 17px;
   font-weight: 800;
   display: flex;
@@ -73,8 +73,16 @@ button {
   background: #4268eb;
   flex-shrink: 0;
 }
-.brand-mark img, .nav-item img { display: block; flex-shrink: 0; }
-.nav-list { display: grid; gap: 5px; width: 100%; }
+.brand-mark img,
+.nav-item img {
+  display: block;
+  flex-shrink: 0;
+}
+.nav-list {
+  display: grid;
+  gap: 5px;
+  width: 100%;
+}
 .nav-item {
   color: #444445;
   display: flex;
@@ -84,15 +92,23 @@ button {
   padding: 12px;
   text-decoration: none;
   border-radius: 8px;
-  font-family: 'Noto Sans TC', Inter, 'Segoe UI', Arial, sans-serif;
+  font-family: "Noto Sans TC", Inter, "Segoe UI", Arial, sans-serif;
   font-weight: 400;
   font-size: 16px;
   line-height: 1.4;
   letter-spacing: 1.92px;
   white-space: nowrap;
 }
-.nav-item:hover, .nav-item.active { background: #f5f5f5; color: #444445; }
-.brand:focus-visible, .nav-item:focus-visible { outline: 2px solid #325fe6; outline-offset: 2px; }
+.nav-item:hover,
+.nav-item.active {
+  background: #f5f5f5;
+  color: #444445;
+}
+.brand:focus-visible,
+.nav-item:focus-visible {
+  outline: 2px solid #325fe6;
+  outline-offset: 2px;
+}
 .main-area {
   flex: 1;
   min-width: 0;
@@ -109,12 +125,15 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-family: 'Noto Sans TC', Inter, 'Segoe UI', Arial, sans-serif;
+  font-family: "Noto Sans TC", Inter, "Segoe UI", Arial, sans-serif;
   font-size: 13px;
   font-weight: 700;
   line-height: 1.4;
 }
-.topbar-title { font-size: 16px; color: #e8e8e9; }
+.topbar-title {
+  font-size: 16px;
+  color: #e8e8e9;
+}
 .topbar-tag {
   color: #325fe6;
   background: #eff5ff;
@@ -145,7 +164,7 @@ h1 {
   color: #16233c;
   font-size: 28px;
   margin: 0 0 9px;
-  letter-spacing: -.4px;
+  letter-spacing: -0.4px;
 }
 
 h2 {
@@ -169,7 +188,7 @@ p {
   padding: 27px;
   border: 1px solid #e5e9f0;
   border-radius: 14px;
-  box-shadow: 0 3px 14px rgba(25, 45, 80, .03);
+  box-shadow: 0 3px 14px rgba(25, 45, 80, 0.03);
 }
 
 .stat-grid {
@@ -312,7 +331,7 @@ p {
   display: flex;
   gap: 6px;
   align-items: center;
-  background: rgba(255, 255, 255, .97);
+  background: rgba(255, 255, 255, 0.97);
   border: 1px solid #e2e8f0;
   border-radius: 9px;
   padding: 9px;
@@ -365,7 +384,7 @@ p {
 }
 
 @media (max-width: 850px) {
-.page-container {
+  .page-container {
     padding: 24px;
   }
 
@@ -375,8 +394,283 @@ p {
 }
 
 .flow-toolbar button:disabled {
-  opacity: .4;
+  opacity: 0.4;
   cursor: not-allowed;
+}
+
+/* OVERDRIVE visual tokens from the approved A interface specification. */
+:root {
+  --od-surface: #ffffff;
+  --od-text: #444445;
+  --od-subtle: #f5f5f5;
+  --od-active: #e8e8e9;
+  --od-accent: #ede186;
+  --od-accent-hover: #dfd16a;
+  --od-pressed: #e6d33f;
+  --od-placeholder: #bcbcc9;
+  --od-search-border: #dfe3e8;
+  --od-note: #fff2a8;
+  color: var(--od-text);
+  background: var(--od-surface);
+  font-family: Inter, "Noto Sans TC", "Segoe UI", Arial, sans-serif;
+}
+body {
+  color: var(--od-text);
+  background: var(--od-surface);
+}
+a {
+  color: var(--od-text);
+}
+.sidebar {
+  width: 200px;
+  background: #fff;
+  color: var(--od-text);
+  gap: 12px;
+}
+.brand {
+  color: var(--od-text);
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+}
+.nav-list {
+  gap: 5px;
+}
+.nav-item {
+  height: 44px;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 8px;
+  color: var(--od-text);
+  font-family: "Noto Sans TC", Inter, "Segoe UI", Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0.12em;
+}
+.nav-item:hover {
+  background: var(--od-subtle);
+  color: var(--od-text);
+}
+.nav-item.active {
+  background: var(--od-active);
+  color: var(--od-text);
+}
+.topbar {
+  height: 60px;
+  background: #fff;
+  border-bottom: 1px solid var(--od-active);
+  color: var(--od-text);
+  font-family: "Noto Sans TC", Inter, Arial, sans-serif;
+}
+.topbar-title {
+  color: var(--od-text);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+.topbar-tag {
+  color: #325fe6;
+  background: transparent;
+  border-radius: 0;
+}
+.panel {
+  border-color: var(--od-subtle);
+  border-radius: 8px;
+  box-shadow: none;
+}
+h1,
+h2 {
+  color: var(--od-text);
+}
+.button-link,
+.primary-button {
+  color: var(--od-text);
+  background: var(--od-accent);
+  border: 0;
+  border-radius: 8px;
+  font-family: Inter, Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+}
+.button-link:hover,
+.primary-button:hover {
+  background: var(--od-accent-hover);
+  color: var(--od-text);
+}
+.workflow-page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.workflow-header {
+  border-color: var(--od-active);
+}
+.workflow-header a {
+  color: var(--od-text);
+}
+.status-pill {
+  color: #325fe6;
+  background: transparent;
+}
+.workflow-header-actions .editor-run-button {
+  width: 196px;
+  height: 37px;
+  padding: 0 10px;
+  white-space: nowrap;
+}
+.editor-run-history,
+.editor-run-cancel {
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--od-active);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--od-text);
+  font-size: 12px;
+}
+.editor-run-cancel {
+  border-color: #dfd16a;
+}
+.app-shell-editor .sidebar {
+  width: 76px;
+  overflow: hidden;
+}
+.app-shell-editor .brand {
+  justify-content: center;
+  padding-inline: 12px;
+}
+.app-shell-editor .brand > span:last-child,
+.app-shell-editor .nav-item > span {
+  display: none;
+}
+.app-shell-editor .nav-item.active {
+  background: transparent;
+}
+.app-shell-editor .topbar-title {
+  color: var(--od-text);
+}
+.workflow-editor-layout {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  background: #f9fbff;
+}
+.workflow-editor-layout .editor-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  outline: none;
+}
+.workflow-editor-layout .editor-wrap:focus-visible {
+  outline: 2px solid var(--od-accent);
+  outline-offset: -2px;
+}
+.editor-canvas-error {
+  position: absolute;
+  z-index: 6;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 12px;
+  border: 1px solid #dfd16a;
+  border-radius: 8px;
+  background: #fff;
+  color: #444445;
+  font-size: 12px;
+}
+.workflow-node {
+  width: 278px;
+  min-height: 149px;
+  padding: 14px 16px;
+  border: 1px solid #f5f5f5;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: none;
+}
+.workflow-node.selected {
+  border: 1px solid var(--od-accent);
+}
+.workflow-node-label {
+  color: var(--od-text);
+  font-family: Inter, "Noto Sans TC", Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 24px;
+}
+.workflow-node-caption {
+  color: var(--od-text);
+  font-family: Inter, "Noto Sans TC", Arial, sans-serif;
+  font-size: 12px;
+  line-height: 19.5px;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+}
+.sticky-note {
+  width: 160px;
+  min-height: 160px;
+  padding: 15px 15px 20px;
+  background: var(--od-note);
+  color: #625629;
+  border: 0;
+  border-radius: 6px;
+  box-shadow: none;
+}
+.sticky-note:hover {
+  box-shadow: 0 3px 8px rgba(81, 71, 34, 0.149);
+}
+.sticky-note.selected {
+  border: 1px solid var(--od-accent-hover);
+}
+.sticky-note-text,
+.sticky-note-input {
+  min-height: 0;
+  color: #625629;
+  font-family: "Noto Sans TC", Inter, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: normal;
+}
+.if-port-label {
+  color: #444445;
+}
+.execution-panel {
+  border-color: #e8e8e9;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(32, 34, 53, 0.12);
+}
+.execution-panel header {
+  border-color: #e8e8e9;
+  color: #444445;
+}
+.execution-columns aside {
+  border-color: #e8e8e9;
+}
+.execution-columns aside button {
+  color: #444445;
+}
+.execution-columns aside button.active {
+  background: #f5f5f5;
+}
+.execution-data pre {
+  background: #f5f5f5;
+}
+@media (max-width: 1050px) {
+  .workflow-editor-layout .editor-tool-panel {
+    width: 280px;
+    flex-basis: 280px;
+  }
+}
+@media (max-width: 850px) {
+  .workflow-editor-layout .editor-tool-panel {
+    width: 240px;
+    flex-basis: 240px;
+  }
+  .workflow-editor-layout .editor-tool-heading,
+  .workflow-editor-layout .editor-tool-search {
+    width: 208px;
+  }
 }
 
 /* Miro 風格便條紙節點 */
@@ -386,7 +680,7 @@ p {
   padding: 22px 18px;
   background: #fff1a8;
   color: #342d17;
-  box-shadow: 2px 6px 16px rgba(67, 52, 7, .18);
+  box-shadow: 2px 6px 16px rgba(67, 52, 7, 0.18);
   border: 2px solid transparent;
   border-radius: 3px;
   cursor: grab;
@@ -427,4 +721,256 @@ p {
   height: 10px;
   background: #d18e18;
   border: 2px solid #fff;
+}
+
+/* B workflow/runtime selectors retained; visual tokens are overridden by OVERDRIVE rules below. */
+.workflow-page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.workflow-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 26px;
+  border-bottom: 1px solid #e3e8f0;
+  background: white;
+  flex-shrink: 0;
+}
+.workflow-header a {
+  font-size: 12px;
+  text-decoration: none;
+}
+.workflow-header h1 {
+  font-size: 18px;
+  margin: 6px 0 0;
+}
+.workflow-header h1 span {
+  color: #8490a0;
+  font-size: 14px;
+  font-weight: 400;
+}
+.status-pill {
+  background: #eef5ff;
+  color: #3869c7;
+  border-radius: 99px;
+  font-size: 12px;
+  padding: 7px 12px;
+}
+.editor-wrap {
+  flex: 1;
+  min-height: 0;
+  background: #f9fbff;
+}
+.flow-toolbar {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid #e2e8f0;
+  border-radius: 9px;
+  padding: 9px;
+  box-shadow: 0 3px 18px #0d244014;
+}
+.flow-toolbar strong {
+  font-size: 12px;
+  margin-right: 5px;
+}
+.flow-toolbar button {
+  background: #f4f6fb;
+  border: 1px solid #dce3f0;
+  border-radius: 6px;
+  padding: 7px 10px;
+  color: #263b62;
+  font-size: 12px;
+}
+.flow-toolbar button.primary-button {
+  color: white;
+  background: #325fe6;
+  border-color: #325fe6;
+}
+.workflow-node {
+  background: white;
+  width: 210px;
+  border: 1px solid #b9c9e4;
+  border-radius: 11px;
+  box-shadow: 0 5px 18px #19315318;
+  padding: 15px;
+}
+.workflow-node.selected {
+  border: 2px solid #325fe6;
+}
+.workflow-node-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: #172945;
+}
+.workflow-node-caption {
+  color: #748298;
+  font-size: 11px;
+  margin-top: 8px;
+}
+@media (max-width: 850px) {
+  .sidebar {
+    width: 190px;
+  }
+  .page-container {
+    padding: 24px;
+  }
+  .stat-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.flow-toolbar button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Miro 風格便條紙節點 */
+.sticky-note {
+  width: 230px;
+  min-height: 180px;
+  padding: 22px 18px;
+  background: #fff1a8;
+  color: #342d17;
+  box-shadow: 2px 6px 16px rgba(67, 52, 7, 0.18);
+  border: 2px solid transparent;
+  border-radius: 3px;
+  cursor: grab;
+  display: flex;
+  align-items: flex-start;
+}
+.sticky-note.selected {
+  border-color: #3568e6;
+}
+.sticky-note-text {
+  font-size: 15px;
+  font-weight: 550;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  width: 100%;
+  min-height: 120px;
+  line-height: 1.5;
+}
+.sticky-note-input {
+  width: 100%;
+  min-height: 130px;
+  resize: vertical;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 15px;
+  line-height: 1.5;
+  cursor: text;
+}
+.sticky-note .react-flow__handle {
+  width: 10px;
+  height: 10px;
+  background: #d18e18;
+  border: 2px solid #fff;
+}
+.if-port-label {
+  font-size: 10px;
+  color: #758297;
+  text-align: right;
+  margin-top: 5px;
+}
+.config-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: #17243c70;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.config-panel {
+  width: min(780px, 94vw);
+  max-height: 92vh;
+  overflow: auto;
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 8px 45px #14213c55;
+}
+.config-panel textarea {
+  width: 100%;
+  height: 330px;
+  font: 13px/1.5 monospace;
+  box-sizing: border-box;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 12px;
+}
+.config-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 14px;
+}
+.execution-panel {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  width: min(710px, 90vw);
+  height: min(440px, 65vh);
+  z-index: 1000;
+  background: white;
+  border: 1px solid #bccbe4;
+  border-radius: 10px;
+  box-shadow: 0 6px 32px #0f172a44;
+  display: flex;
+  flex-direction: column;
+}
+.execution-panel header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-bottom: 1px solid #e2e8f0;
+}
+.execution-panel header button {
+  margin-left: auto;
+}
+.execution-columns {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+}
+.execution-columns aside {
+  width: 210px;
+  overflow: auto;
+  border-right: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.execution-columns aside button {
+  text-align: left;
+  padding: 10px;
+  background: white;
+  border: 0;
+  border-bottom: 1px solid #eee;
+}
+.execution-columns aside button.active {
+  background: #eaf1ff;
+}
+.execution-data {
+  overflow: auto;
+  flex: 1;
+  min-width: 0;
+  padding: 13px;
+}
+.execution-data pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: #f5f7fa;
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 11px;
 }

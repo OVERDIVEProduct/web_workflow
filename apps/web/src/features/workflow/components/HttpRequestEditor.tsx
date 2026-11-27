@@ -3,6 +3,7 @@ import {
   AlertTriangle,
   Braces,
   CheckCircle2,
+  ChevronDown,
   Code2,
   Copy,
   Globe2,
@@ -10,6 +11,7 @@ import {
   Plus,
   RotateCcw,
   Search,
+  ShieldCheck,
   Trash2,
   X,
 } from "lucide-react";
@@ -22,7 +24,7 @@ type Row = {
   value: string;
   expression: boolean;
 };
-type Config = {
+export type Config = {
   method: HttpMethod;
   url: string;
   auth: "None";
@@ -52,7 +54,7 @@ const row = (name = "", value = "", expression = false): Row => ({
   value,
   expression,
 });
-const defaults = (): Config => ({
+export const defaults = (): Config => ({
   method: "GET",
   url: YOUBIKE_URL,
   auth: "None",
@@ -194,13 +196,26 @@ export default function HttpRequestEditor({
   workflowId,
   nodeId,
   onClose,
+  initialConfig,
+  onConfigChange,
+  embedded = false,
+  activeTab = "Parameters",
 }: {
   workflowId: string;
   nodeId: string;
   onClose: () => void;
+  initialConfig?: Record<string, unknown>;
+  onConfigChange?: (config: Config) => void;
+  embedded?: boolean;
+  activeTab?: "Parameters" | "Settings";
 }) {
   const storeKey = storeKeyFor(workflowId, nodeId);
-  const [config, setConfig] = useState<Config>(() => load(storeKey));
+  const [config, setConfig] = useState<Config>(
+    () =>
+      (initialConfig
+        ? { ...defaults(), ...initialConfig, auth: "None" }
+        : load(storeKey)) as Config,
+  );
   const [input, setInput] = useState(INPUT_DEFAULT);
   const [tab, setTab] = useState<"Parameters" | "Settings">("Parameters");
   const [inputTab, setInputTab] = useState<"JSON" | "Schema">("JSON");
@@ -216,9 +231,9 @@ export default function HttpRequestEditor({
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
-  const [districtOnly] = useState(false);
-  const [bikesOnly] = useState(false);
-  const [keywordOnly] = useState(false);
+  const [districtOnly, setDistrictOnly] = useState(false);
+  const [bikesOnly, setBikesOnly] = useState(false);
+  const [keywordOnly, setKeywordOnly] = useState(false);
   const [preview, setPreview] = useState(false);
   const [expression, setExpression] = useState("{{ $json.district }}");
   const [closeDialog, setCloseDialog] = useState(false);
@@ -231,7 +246,13 @@ export default function HttpRequestEditor({
   );
   const update = (patch: Partial<Config>) =>
     setConfig((c) => ({ ...c, ...patch }));
+  const onConfigChangeRef = useRef(onConfigChange);
+  onConfigChangeRef.current = onConfigChange;
   useEffect(() => {
+    if (embedded) onConfigChangeRef.current?.(config);
+  }, [config, embedded]);
+  useEffect(() => {
+    if (embedded) return;
     setSaved("Saving...");
     const timer = setTimeout(() => {
       try {
@@ -257,8 +278,8 @@ export default function HttpRequestEditor({
   );
   const context =
     parsed.value &&
-      typeof parsed.value === "object" &&
-      !Array.isArray(parsed.value)
+    typeof parsed.value === "object" &&
+    !Array.isArray(parsed.value)
       ? (parsed.value as Record<string, unknown>)
       : {};
   const filteredRows = useMemo(
@@ -369,13 +390,13 @@ export default function HttpRequestEditor({
         throw Error("回應超過 5 MB 展示限制");
       const resultType = responseText
         ? (() => {
-          try {
-            JSON.parse(responseText);
-            return "json" as const;
-          } catch {
-            return "text" as const;
-          }
-        })()
+            try {
+              JSON.parse(responseText);
+              return "json" as const;
+            } catch {
+              return "text" as const;
+            }
+          })()
         : ("empty" as const);
       const data: unknown =
         resultType === "json"
@@ -419,7 +440,7 @@ export default function HttpRequestEditor({
         setStatus("failed");
         setError(
           (e instanceof Error ? e.message : "請求失敗") +
-          "。若是 Failed to fetch，可能是 API CORS 政策或網路問題。",
+            "。若是 Failed to fetch，可能是 API CORS 政策或網路問題。",
         );
       }
     } finally {
@@ -428,7 +449,13 @@ export default function HttpRequestEditor({
     }
   };
   return (
-    <div className="http-request-editor">
+    <div
+      className={
+        embedded
+          ? "http-request-editor ns-http-embedded"
+          : "http-request-editor"
+      }
+    >
       <div className="app">
         <header className="topbar">
           <div className="brand">
@@ -557,7 +584,7 @@ export default function HttpRequestEditor({
               </div>
             </div>
             <div className="config-scroll">
-              {tab === "Parameters" ? (
+              {(embedded ? activeTab : tab) === "Parameters" ? (
                 <>
                   <label>Method</label>
                   <select
@@ -597,7 +624,10 @@ export default function HttpRequestEditor({
                       <Braces size={16} />
                     </button>
                   </div>
-
+                  <label>Authentication</label>
+                  <select value="None" disabled>
+                    <option>None（純前端測試版）</option>
+                  </select>
                   <Fields
                     title="Query Parameters"
                     values={config.query}
@@ -608,6 +638,38 @@ export default function HttpRequestEditor({
                     values={config.headers}
                     onChange={(headers) => update({ headers })}
                   />
+                  <div className="toggle-line">
+                    <label>Send Body</label>
+                    <input
+                      type="checkbox"
+                      checked={config.bodyEnabled}
+                      disabled={["GET", "HEAD"].includes(config.method)}
+                      onChange={(e) =>
+                        update({ bodyEnabled: e.target.checked })
+                      }
+                    />
+                  </div>
+                  {config.bodyEnabled && (
+                    <textarea
+                      className="body-editor"
+                      value={config.body}
+                      onChange={(e) => update({ body: e.target.value })}
+                    />
+                  )}
+                  <div className="option-head">
+                    <b>Options</b>
+                    <ChevronDown size={16} />
+                  </div>
+                  <p className="option-label">
+                    Timeout: {config.timeout / 1000}s · No automatic redirects ·
+                    JSON auto-detect
+                  </p>
+                  <div className="note">
+                    <ShieldCheck size={16} />{" "}
+                    {embedded
+                      ? "Execute Step 由 Node.js 後端執行；後端會檢查允許的 API 網域。"
+                      : "純 React 單節點測試：API 必須允許 CORS。網域限制僅在 UI，非伺服器資安防護。"}
+                  </div>
                 </>
               ) : (
                 <>
@@ -623,8 +685,7 @@ export default function HttpRequestEditor({
                     }
                   />
                   <p className="hint">
-                    非敏感設定自動保存在瀏覽器 localStorage。INPUT 和 OUTPUT
-                    不保存。
+                    設定由共用節點設定頁儲存；INPUT 和 OUTPUT 不會寫入節點設定。
                   </p>
                   <button className="add" onClick={() => update(defaults())}>
                     <RotateCcw size={15} /> 重設為 YouBike 預設
@@ -694,6 +755,47 @@ export default function HttpRequestEditor({
                   </div>
                   {result.type === "json" ? (
                     <>
+                      <div className="mapping" style={{ padding: "10px 12px" }}>
+                        <div className="section-title">
+                          本機資料篩選（不重新呼叫 API）
+                        </div>
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={districtOnly}
+                            onChange={(e) => {
+                              setDistrictOnly(e.target.checked);
+                              setPage(1);
+                            }}
+                          />{" "}
+                          行政區：{valueText(context.district ?? "大安區")}
+                        </label>
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={bikesOnly}
+                            onChange={(e) => {
+                              setBikesOnly(e.target.checked);
+                              setPage(1);
+                            }}
+                          />{" "}
+                          可借至少 {valueText(context.minBikes ?? 1)} 台
+                        </label>
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={keywordOnly}
+                            onChange={(e) => {
+                              setKeywordOnly(e.target.checked);
+                              setPage(1);
+                            }}
+                          />{" "}
+                          站名包含：{valueText(context.keyword ?? "捷運")}
+                        </label>
+                        <small>
+                          篩選後 {filteredRows.length} / {dataRows.length} 筆
+                        </small>
+                      </div>
                       {outputTab === "Table" ? (
                         <>
                           <div className="filter">

@@ -1,0 +1,137 @@
+--- v2/apps/worker/src/engine.js
++++ v3/apps/worker/src/engine.js
+@@ -17,13 +17,19 @@
+     if (expr === '$run.id') return runId;
+     if (expr === '$json') return json;
+     if (expr.startsWith('$json.')) return field(json, expr.slice(6));
++    if (expr.startsWith('$json[')) return field(json, expr.slice(5));
+     throw Error(`Unsupported expression: ${expr}`);
+   };
+   if (match) return evalPath(match[1].trim());
+   return raw.replace(/{{\s*([^{}]+)\s*}}/g, (_,exp) => String(evalPath(exp.trim()) ?? ''));
+ }
+ function condition(json, rule, runId) {
+-  const left = resolve(rule.field?.startsWith('$json.') ? `{{${rule.field}}}` : `{{$json.${rule.field || 'value'}}}`, json, runId);
++  // Users may enter the field as `price`, `$json.price`, or `{{$json.price}}`.
++  // Normalize these equivalent forms without interpreting arbitrary JavaScript.
++  const rawPath = String(rule.field ?? 'value').trim();
++  const expressionMatch = rawPath.match(/^{{\s*(\$json(?:\.[\w$]+|\[\d+\])*)\s*}}$/);
++  const path = expressionMatch ? expressionMatch[1] : rawPath;
++  const left = resolve(path === '$json' ? '{{$json}}' : path.startsWith('$json.') || path.startsWith('$json[') ? `{{${path}}}` : `{{$json.${path}}}`, json, runId);
+   const right = resolve(rule.value, json, runId);
+   switch (rule.operator) {
+     case 'eq': return left === right;
+@@ -176,7 +182,12 @@
+     }
+     case 'httpRequest': {
+       const values=[];
+-      for(const item of input) {if(signal.aborted) throw Error('Cancelled'); values.push(...await callHttp(config,item,runId,signal,httpFetch,reportHttp)); if(values.length>MAX_ITEMS) throw Error('Item limit exceeded');}
++      for(const [index,item] of input.entries()) {
++        if(signal.aborted) throw Error('Cancelled');
++        try {values.push(...await callHttp(config,item,runId,signal,httpFetch,reportHttp));}
++        catch(error) {throw Error(`HTTP input item ${index+1}/${input.length}: ${error instanceof Error?error.message:String(error)}`);}
++        if(values.length>MAX_ITEMS) throw Error('Item limit exceeded');
++      }
+       return {main:values};
+     }
+     default: throw Error(`Unsupported node: ${node.type}`);
+--- v2/apps/web/src/features/workflow/components/NodeConfigEditor.tsx
++++ v3/apps/web/src/features/workflow/components/NodeConfigEditor.tsx
+@@ -31,7 +31,7 @@
+ };
+ const operatorOptions=[['eq','等於'],['ne','不等於'],['gt','大於'],['gte','大於或等於'],['lt','小於'],['lte','小於或等於'],['contains','包含'],['empty','為空'],['notEmpty','不為空']];
+ const needsValue=(op:string)=>op!=='empty'&&op!=='notEmpty';
+-const fieldPath=(s:string)=>s.trim().replace(/^\$json\./,'');
++const fieldPath=(s:string)=>s.trim().replace(/^{{\s*\$json\./,'').replace(/\s*}}$/,'').replace(/^\$json\./,'');
+ const emptyRule=():Rule=>({field:'',operator:'eq',value:''});
+ const emptyField=():FieldRow=>({name:'',value:''});
+ const emptySort=():SortRow=>({field:'',direction:'asc'});
+@@ -102,16 +102,18 @@
+   const [jsonMode,setJsonMode]=useState(false);
+   const [raw,setRaw]=useState('');
+   const [error,setError]=useState('');
++  const [saveNotice,setSaveNotice]=useState('');
+   const [initialText,setInitialText]=useState(()=>JSON.stringify(config.initialItems??{},null,2));
+   const [selectedRun,setSelectedRun]=useState('');
+   const [stepRuns,setStepRuns]=useState<StepEntry[]>([]);
++  const [hidePreviousOutput,setHidePreviousOutput]=useState(false);
+   const [running,setRunning]=useState(false);
+   const [mockMode,setMockMode]=useState(false);
+   const [mockText,setMockText]=useState('[{"json":{}}]');
+   const abort=useRef<AbortController|null>(null);
+   useEffect(()=>()=>abort.current?.abort(),[]);
+   const allRuns=[...nodeRuns,...stepRuns];
+-  const currentRun=allRuns.find(r=>r.id===selectedRun)||allRuns.at(-1);
++  const currentRun=hidePreviousOutput?undefined:(allRuns.find(r=>r.id===selectedRun)||allRuns.at(-1));
+   const kind=node.type||'output';
+   const title=names[kind]||'HTTP Request';
+   const upstream=edges.filter(e=>e.target===node.id);
+@@ -124,7 +126,7 @@
+   const outputItems=currentRun?(Object.values(outputPort).flat().filter((i):i is ViewerItem=>i&&typeof i==='object'&&'json'in i) as ViewerItem[]):null;
+   const [outputHandle,setOutputHandle]=useState('main');
+   const showingOutput=kind==='if'?(outputPort[outputHandle]||[]) as ViewerItem[]:kind==='output'?((outputPort.main||currentRun?.inputItems||[]) as ViewerItem[]):outputItems;
+-  const update=(patch:Config)=>{setConfig(c=>({...c,...patch}));setError('');};
++  const update=(patch:Config)=>{setConfig(c=>({...c,...patch}));setError('');setSaveNotice('');};
+   const toggleAdvanced=()=>{
+     if(!jsonMode){setRaw(JSON.stringify(config,null,2));setJsonMode(true);setError('');return;}
+     try{const next=JSON.parse(raw);if(!next||typeof next!=='object'||Array.isArray(next))throw Error('設定必須是 JSON 物件');setConfig(next);if(kind==='manualTrigger')setInitialText(JSON.stringify(next.initialItems??{},null,2));setJsonMode(false);setError('');}
+@@ -143,7 +145,7 @@
+     if(kind==='set' && (next.fields as FieldRow[]|undefined)?.some(f=>!f.name.trim()))throw Error('Set 欄位名稱不可空白');
+     return next;
+   };
+-  const save=()=>{try{const next=prepareConfig();onChange(next);setError('');return next;}catch(e){setError(e instanceof Error?e.message:String(e));return null;}};
++  const save=()=>{try{const next=prepareConfig();onChange(next);setError('');setSaveNotice('設定已更新到畫布與協作文件；若要保留本機備份，返回畫布後請按「備份至本機」。');return next;}catch(e){setError(e instanceof Error?e.message:String(e));setSaveNotice('');return null;}};
+   const saveClose=()=>{if(running)return;if(save())onClose();};
+   const execute=async()=>{
+     if(running)return;
+@@ -155,11 +157,11 @@
+       else if(kind==='httpRequest' && upstream.length===0)items=[{json:{}}];
+       else {setError('尚未取得上游 INPUT；請先執行 Workflow，或勾選「使用測試輸入」');return;}
+     }
+-    const controller=new AbortController();abort.current=controller;setRunning(true);setError('');
++    const controller=new AbortController();abort.current=controller;setHidePreviousOutput(true);setRunning(true);setError('');setSelectedRun('');
+     try{
+       const res=await fetch(`${apiBase}/steps`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({node:{...node,data:{...node.data,config:next}},inputItems:items}),signal:controller.signal});
+       const data=await res.json();if(!res.ok)throw Error(data.error||'單節點執行失敗');
+-      setStepRuns(old=>[...old,data as StepEntry]);setSelectedRun(data.id);setOutputHandle('main');
++      setStepRuns(old=>[...old,data as StepEntry]);setSelectedRun(data.id);setHidePreviousOutput(false);setOutputHandle(kind==='if'?'true':'main');
+     }catch(e){if(!controller.signal.aborted)setError(e instanceof Error?e.message:String(e));else setError('已取消等待單節點執行結果；外部 HTTP 操作可能仍在進行。');}
+     finally{setRunning(false);abort.current=null;}
+   };
+@@ -174,7 +176,7 @@
+       </header>
+       <div className="nce-columns">
+         <aside className="nce-input"><div className="nce-column-head">INPUT <span>上游資料</span></div>
+-          {allRuns.length>1&&<select className="nce-run-select" aria-label="節點執行紀錄" value={currentRun?.id||''} onChange={e=>setSelectedRun(e.target.value)}>{allRuns.map((r,i)=><option key={r.id} value={r.id}>第 {i+1} 次 · {r.status}</option>)}</select>}
++          {allRuns.length>1&&<select className="nce-run-select" aria-label="節點執行紀錄" value={currentRun?.id||''} onChange={e=>{setSelectedRun(e.target.value);setHidePreviousOutput(false);}}>{allRuns.map((r,i)=><option key={r.id} value={r.id}>第 {i+1} 次 · {r.status}</option>)}</select>}
+           {source.length>0&&!currentRun&&<select className="nce-run-select" aria-label="上游來源" value={selectedSource?`${selectedSource.edge.id}:${selectedSource.run?.id}`:''} onChange={e=>setSourceId(e.target.value)}>{source.map(s=><option key={s.run!.id+s.edge.id} value={`${s.edge.id}:${s.run!.id}`}>{nodeLabels[s.edge.source]||s.edge.source} · {s.run!.id.slice(0,8)}</option>)}</select>}
+           {currentRun?.sourceEdgeId&&<p className="ns-source">來源：{nodeLabels[edges.find(e=>e.id===currentRun.sourceEdgeId)?.source||'']||'上一節點'} · {currentRun.sourceEdgeId}</p>}
+           {mockMode?<textarea className="ns-mock" spellCheck={false} aria-label="測試輸入 JSON" value={mockText} onChange={e=>setMockText(e.target.value)}/>:<NodeDataViewer items={inputItems && validItems(inputItems)?inputItems:null} emptyText="沒有上游執行資料；請先執行 Workflow 或使用測試輸入。"/>}
+@@ -195,13 +197,17 @@
+               {kind==='output'&&<div className="nce-message"><Check size={18}/><div><strong>不需要參數</strong><p>Output 記錄每次收到的資料；多條路線獨立執行。</p></div></div>}
+             </>}
+             {error&&<p role="alert" className="nce-error-banner">{error}</p>}
++            {saveNotice&&<p role="status" className="nce-save-notice">{saveNotice}</p>}
+           </div>
+         </section>
+         <aside className="nce-output"><div className="nce-column-head">OUTPUT {kind==='output'?'(終點接收資料)':''} <span>{currentRun?.durationMs??'—'} ms · {currentRun?.status||'未執行'}</span></div>
+-          {currentRun?.error&&<p className="nce-error-banner">{currentRun.error}</p>}
++          {currentRun?.error&&<p role="alert" className="nce-error-banner">{currentRun.error}</p>}
+           {currentRun?.httpResponses?.map((r,i)=><p className="ns-http-response" key={i}>HTTP {r.statusCode} {r.statusText} · {r.durationMs} ms · {(r.responseBytes/1024).toFixed(1)} KB {(currentRun?.httpResponses?.length??0)>1?`（第 ${i+1} 次請求）`:''}</p>)}
+           {kind==='if'&&<div className="ns-port"><button className={outputHandle==='true'?'active':''} onClick={()=>setOutputHandle('true')}>True ({outputPort.true?.length||0})</button><button className={outputHandle==='false'?'active':''} onClick={()=>setOutputHandle('false')}>False ({outputPort.false?.length||0})</button></div>}
+-          <NodeDataViewer items={currentRun?showingOutput:null} emptyText={running?'節點正在執行…':'按 Execute Step，或從畫布執行 Workflow 後查看結果。'}/>
++          {kind==='filter' && currentRun?.status==='success' && currentRun.inputItems.length>0 && (currentRun.outputItemsByPort.main||[]).length===0 &&
++            <p role="status" className="nce-filter-hint">Filter 已執行成功，但全部資料都未通過條件。請檢查條件欄位與左側 INPUT 的 JSON 欄位是否一致。可用欄位：{Object.keys((currentRun.inputItems[0] as ViewerItem)?.json||{}).join('、')||'（空物件）'}。</p>}
++          {kind==='httpRequest' && (currentRun?.inputItems.length??0)>1 && <p className="nce-filter-hint">此 HTTP 節點預設對每個輸入 Item 分別發送請求。本次輸入 {currentRun.inputItems.length} Items，可能發出多次 HTTP 請求。</p>}
++          <NodeDataViewer items={currentRun?showingOutput:null} emptyText={running?'節點正在執行…':error?'本次執行未取得有效結果；請查看錯誤訊息。':'按 Execute Step，或從畫布執行 Workflow 後查看結果。'}/>
+         </aside>
+       </div>
+     </div>
+--- v2/apps/web/src/features/workflow/components/nodeConfigEditor.css
++++ v3/apps/web/src/features/workflow/components/nodeConfigEditor.css
+@@ -13,3 +13,5 @@
+ .nce-main .ns-http-embedded .config-scroll{height:auto!important;max-height:none!important;overflow:visible!important;padding:0!important}
+ @media(max-width:1050px){.nce-columns{grid-template-columns:minmax(150px,.8fr) minmax(330px,1.4fr) minmax(150px,.8fr)}.nce-output{display:flex!important}}
+ @media(max-width:700px){.nce-columns{display:flex;flex-direction:column;overflow:auto}.nce-input,.nce-output{display:flex!important;min-height:260px}.nce-main{min-height:430px}.nce-top{flex-wrap:wrap}.nce-execute,.nce-save{padding:7px 9px}}
++
++.nce-filter-hint{margin:12px 14px;border:1px solid #f1d29a;background:#fff8eb;color:#82570b;border-radius:7px;padding:11px;font-size:12px;line-height:1.6}.nce-save-notice{margin:14px 0;border:1px solid #b4dfc6;background:#f0fbf4;color:#176a40;border-radius:7px;padding:11px;font-size:12px;line-height:1.6}
