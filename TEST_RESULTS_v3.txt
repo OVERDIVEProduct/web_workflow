@@ -1,0 +1,206 @@
+
+> overdrive-starter@0.1.0 test:engine
+> node --test apps/worker/test/*.test.js
+
+TAP version 13
+# Subtest: Manual Trigger output initial items
+ok 1 - Manual Trigger output initial items
+  ---
+  duration_ms: 2.38295
+  type: 'test'
+  ...
+# Subtest: Filter AND/OR and zero items
+ok 2 - Filter AND/OR and zero items
+  ---
+  duration_ms: 1.073688
+  type: 'test'
+  ...
+# Subtest: Set preserves source input and resolves expression
+ok 3 - Set preserves source input and resolves expression
+  ---
+  duration_ms: 0.374694
+  type: 'test'
+  ...
+# Subtest: Sort numeric ascending/descending and multi keys
+ok 4 - Sort numeric ascending/descending and multi keys
+  ---
+  duration_ms: 0.403217
+  type: 'test'
+  ...
+# Subtest: Limit zero, first and last, oversized
+ok 5 - Limit zero, first and last, oversized
+  ---
+  duration_ms: 0.669048
+  type: 'test'
+  ...
+# Subtest: IF routes each item independently
+ok 6 - IF routes each item independently
+  ---
+  duration_ms: 0.409197
+  type: 'test'
+  ...
+# Subtest: Output receives input but does not emit downstream data
+ok 7 - Output receives input but does not emit downstream data
+  ---
+  duration_ms: 0.312671
+  type: 'test'
+  ...
+# Subtest: HTTP GET/POST actual loopback transport, headers, query, JSON object and array
+ok 8 - HTTP GET/POST actual loopback transport, headers, query, JSON object and array
+  ---
+  duration_ms: 49.618363
+  type: 'test'
+  ...
+# Subtest: HTTP 204, error status, malformed JSON, text, zero array, multiple items
+ok 9 - HTTP 204, error status, malformed JSON, text, zero array, multiple items
+  ---
+  duration_ms: 7.529594
+  type: 'test'
+  ...
+# Subtest: HTTP timeout respects node config with cancellable request
+ok 10 - HTTP timeout respects node config with cancellable request
+  ---
+  duration_ms: 1004.343482
+  type: 'test'
+  ...
+# Subtest: workflow diamond executes downstream separately
+ok 11 - workflow diamond executes downstream separately
+  ---
+  duration_ms: 90.363876
+  type: 'test'
+  ...
+# Subtest: trigger -> output
+ok 12 - trigger -> output
+  ---
+  duration_ms: 3.075623
+  type: 'test'
+  ...
+# Subtest: filter sort limit pipeline
+ok 13 - filter sort limit pipeline
+  ---
+  duration_ms: 9.994697
+  type: 'test'
+  ...
+# Subtest: if true false separate items
+ok 14 - if true false separate items
+  ---
+  duration_ms: 2.711755
+  type: 'test'
+  ...
+# Subtest: multi route: common output executes independently
+ok 15 - multi route: common output executes independently
+  ---
+  duration_ms: 1.478287
+  type: 'test'
+  ...
+# Subtest: cycle rejected
+ok 16 - cycle rejected
+  ---
+  duration_ms: 0.32511
+  type: 'test'
+  ...
+# Subtest: invalid branch handle rejected
+ok 17 - invalid branch handle rejected
+  ---
+  duration_ms: 0.10664
+  type: 'test'
+  ...
+# Subtest: filter produces zero: downstream skipped
+ok 18 - filter produces zero: downstream skipped
+  ---
+  duration_ms: 0.455716
+  type: 'test'
+  ...
+# Subtest: HTTP mocked GET result passes to output
+ok 19 - HTTP mocked GET result passes to output
+  ---
+  duration_ms: 1.317185
+  type: 'test'
+  ...
+# Subtest: HTTP nonallowlisted host rejected
+ok 20 - HTTP nonallowlisted host rejected
+  ---
+  duration_ms: 0.725042
+  type: 'test'
+  ...
+# Subtest: set expression
+ok 21 - set expression
+  ---
+  duration_ms: 1.054418
+  type: 'test'
+  ...
+# Subtest: real HTTP transport -> JSON array -> Filter -> Output, checks every handoff
+ok 22 - real HTTP transport -> JSON array -> Filter -> Output, checks every handoff
+  ---
+  duration_ms: 54.574058
+  type: 'test'
+  ...
+# Subtest: default Filter field value with API rows having only price returns zero, not network failure
+ok 23 - default Filter field value with API rows having only price returns zero, not network failure
+  ---
+  duration_ms: 14.007943
+  type: 'test'
+  ...
+# Subtest: Filter accepts plain, $json and braced expression field paths
+ok 24 - Filter accepts plain, $json and braced expression field paths
+  ---
+  duration_ms: 1.590266
+  type: 'test'
+  ...
+# Subtest: 20 consecutive real HTTP -> Filter workflow runs are independent
+ok 25 - 20 consecutive real HTTP -> Filter workflow runs are independent
+  ---
+  duration_ms: 51.471814
+  type: 'test'
+  ...
+# Subtest: HTTP per-input failures identify which item failed, and do not output misleading success
+ok 26 - HTTP per-input failures identify which item failed, and do not output misleading success
+  ---
+  duration_ms: 4.864419
+  type: 'test'
+  ...
+# Subtest: IF branches and diamond do not merge inputs
+ok 27 - IF branches and diamond do not merge inputs
+  ---
+  duration_ms: 1.546069
+  type: 'test'
+  ...
+# Subtest: execute step does not schedule downstream
+ok 28 - execute step does not schedule downstream
+  ---
+  duration_ms: 2.22333
+  type: 'test'
+  ...
+# Subtest: IF step preserves separate True and False output ports
+ok 29 - IF step preserves separate True and False output ports
+  ---
+  duration_ms: 1.587261
+  type: 'test'
+  ...
+# Subtest: output step only receives its input
+ok 30 - output step only receives its input
+  ---
+  duration_ms: 1.636546
+  type: 'test'
+  ...
+# Subtest: HTTP step invokes injected fetch rather than simulated output
+ok 31 - HTTP step invokes injected fetch rather than simulated output
+  ---
+  duration_ms: 1.345537
+  type: 'test'
+  ...
+# Subtest: step with malformed input rejected
+ok 32 - step with malformed input rejected
+  ---
+  duration_ms: 0.845023
+  type: 'test'
+  ...
+1..32
+# tests 32
+# suites 0
+# pass 32
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1258.65248
